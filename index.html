@@ -13,66 +13,57 @@
   <div class="container">
     <h1>Writer Letter Input</h1>
 
-    <!-- Submission Form -->
     <form id="letterForm">
       <div>
         <label for="orderId">Order ID:</label>
         <input type="text" id="orderId" required>
       </div>
       <div>
-        <label for="letterContent">Letter Content:</label>
-        <textarea id="letterContent" rows="10" required></textarea>
+        <label for="content">Letter Content:</label>
+        <textarea id="content" rows="10" required></textarea>
       </div>
       <button type="submit">Submit Letter</button>
     </form>
-
-    <!-- Update Button -->
-    <button id="updateButton" style="display: none;">Update Letter</button>
-
     <div id="result"></div>
   </div>
 
   <script>
     const letterForm = document.getElementById('letterForm');
-    const updateButton = document.getElementById('updateButton');
     const resultDiv = document.getElementById('result');
-
-    // Handle letter submission
-    letterForm.addEventListener('submit', function(e) {
+  
+    letterForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       const orderId = document.getElementById('orderId').value.trim();
-      const letterContent = document.getElementById('letterContent').value.trim();
-
-      if (!orderId || !letterContent) {
+      const content = document.getElementById('content').value.trim();
+  
+      if (!orderId || !content) {
         resultDiv.innerHTML = '<p class="error">Order ID and Letter Content are required.</p>';
         return;
       }
-
-      // Save the letter to localStorage
-      localStorage.setItem(orderId, letterContent);
-      resultDiv.innerHTML = '<p class="success">Letter submitted successfully!</p>';
-      letterForm.reset();
-      updateButton.style.display = 'block'; // Show the update button
-    });
-
-    // Handle letter update
-    updateButton.addEventListener('click', function() {
-      const orderId = document.getElementById('orderId').value.trim();
-
-      if (!orderId) {
-        resultDiv.innerHTML = '<p class="error">Please enter an Order ID to update the letter.</p>';
-        return;
-      }
-
-      // Retrieve the letter from localStorage
-      const letterContent = localStorage.getItem(orderId);
-      if (letterContent) {
-        document.getElementById('letterContent').value = letterContent;
-        resultDiv.innerHTML = '<p class="info">Edit the letter content and submit to update.</p>';
-      } else {
-        resultDiv.innerHTML = '<p class="error">No letter found for the given Order ID.</p>';
+  
+      try {
+        const response = await fetch('http://enchant-copy-production.up.railway.app/shopify/letter/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ orderId, content }),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          resultDiv.innerHTML = `<p class="success">${data.message || 'Letter processed successfully!'}</p>`;
+          letterForm.reset();
+        } else {
+          const errorData = await response.json();
+          resultDiv.innerHTML = `<p class="error">${errorData.message || 'Failed to process the letter.'}</p>`;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        resultDiv.innerHTML = '<p class="error">An error occurred while processing the letter. Please try again.</p>';
       }
     });
   </script>
+  
 </body>
 </html>
