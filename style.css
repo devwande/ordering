@@ -81,3 +81,9 @@ body {
   .error {
     color: red;
   }
+
+  select{
+    display: block;
+    padding:10px;
+
+  }
