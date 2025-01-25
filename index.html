@@ -29,6 +29,22 @@
           <option value="scroll">Scroll</option>
         </select>
       </div>
+      <div>
+        <label for="link">Digital Seal Link:</label>
+        <input type="text" id="link" required>
+      </div>
+      <div>
+        <label for="polaroid">Polaroid Picture:</label>
+        <input type="file" accept="image/*" id="polaroid" class="polaroid" required>
+      </div>
+      <div>
+        <label for="delivery-date">Delivery Date:</label>
+        <input type="date" id="delivery-date" required>
+      </div>
+      <div>
+        <label for="pin">Enter the security pin:</label>
+        <input type="text" id="pin" required>
+      </div>
       <button type="submit">Submit Letter</button>
     </form>
     <div id="result"></div>
@@ -43,8 +59,13 @@
       const orderId = document.getElementById('orderId').value.trim();
       const content = document.getElementById('content').value.trim();
       const type = document.getElementById('type').value.trim();
+      const link = document.getElementById('link').value.trim();
+      const polaroid = document.getElementById('polaroid').files[0];
+      const deliveryDate = document.getElementById('delivery-date').value.trim();
+      const pin = document.getElementById('pin').value.trim();
 
-      if (!orderId || !content || !type) {
+
+      if (!orderId || !content || !type || !link || !polaroid || !deliveryDate || !pin) {
         resultDiv.innerHTML = '<p class="error">All fields are required.</p>';
         return;
       }
@@ -55,7 +76,7 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ orderId, content, type }),
+          body: JSON.stringify({ orderId, content, type, link, polaroid, deliveryDate, pin }),
         });
 
         if (response.ok) {
@@ -72,6 +93,5 @@
       }
     });
   </script>
-
 </body>
 </html>
