@@ -81,11 +81,11 @@
 
         if (response.ok) {
           const data = await response.json();
-          resultDiv.innerHTML = `<p class="success">${data.message || 'Letter processed successfully!'}</p>`;
+          resultDiv.innerHTML = `<p class="success">${data.message}</p>`;
           letterForm.reset();
         } else {
           const errorData = await response.json();
-          resultDiv.innerHTML = `<p class="error">${errorData.message || 'Failed to process the letter.'}</p>`;
+          resultDiv.innerHTML = `<p class="error">${errorData.message}</p>`;
         }
       } catch (error) {
         console.error('Error:', error);
