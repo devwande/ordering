@@ -34,9 +34,10 @@
         <label for="link">Digital Seal Link:</label>
         <input type="text" id="link" required>
       </div>
-      <div enctype="multipart/form-data">
-        <label for="polaroid">Polaroid Picture:</label>
+      <div>
+        <label for="polaroid">Polaroid Pictures (Max 5MB each):</label>
         <input type="file" accept="image/*" id="polaroid" class="polaroid" multiple required>
+        <div id="imagePreview"></div>
       </div>
       <div>
         <label for="deliveryDate">Delivery Date:</label>
@@ -49,181 +50,145 @@
       <button type="submit">Submit Letters</button>
     </form>
     <div id="result"></div>
+    <div id="errorDetails" style="color: red; margin-top: 10px;"></div>
   </div>
 
-  <script>
-    const letterForm = document.getElementById('letterForm');
-    const resultDiv = document.getElementById('result');
-    const addContentButton = document.getElementById('addContent');
-    const contentContainer = document.getElementById('contentContainer');
-
-    // Add functionality to dynamically add more content fields
-    addContentButton.addEventListener('click', () => {
-      const textarea = document.createElement('textarea');
-      textarea.classList.add('content');
-      textarea.rows = 5;
-      textarea.required = true;
-      contentContainer.appendChild(textarea);
-    });
-
-    letterForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const orderId = document.getElementById('orderId').value.trim();
-      const contentElements = document.querySelectorAll('.content');
-      const content = Array.from(contentElements).map((el) => el.value.trim());
-      const type = document.getElementById('type').value.trim();
-      const link = document.getElementById('link').value.trim();
-      const polaroid = document.getElementById('polaroid').files[0];
-      const deliveryDate = document.getElementById('deliveryDate').value.trim();
-      const pin = document.getElementById('pin').value.trim();
-
-      // Ensure all fields are filled
-      if (!orderId || content.some((c) => !c) || !type || !link || !polaroid || !deliveryDate || !pin) {
-        resultDiv.innerHTML = '<p class="error">All fields are required.</p>';
-        return;
-      }
-
-      try {
-        const response = await fetch('https://enchant-copy-production.up.railway.app/shopify/letter/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ orderId, content, type, link, polaroid, deliveryDate, pin }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          resultDiv.innerHTML = `<p class="success">${data.message}</p>`;
-          letterForm.reset();
-        } else {
-          const errorData = await response.json();
-          resultDiv.innerHTML = `<p class="error">${errorData.message}</p>`;
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        resultDiv.innerHTML = '<p class="error">An error occurred while processing the letters. Please try again.</p>';
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
 
 
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Writer Letter Input</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header class="header">
-    <div class="logo">Enchant Gifts</div>
-  </header>
-  <div class="container">
-    <h1>Writer Letter Input</h1>
-
-    <form id="letterForm">
-      <div>
-        <label for="orderId">Order ID <span style="color: gray;">format(e.g 1023)</span>:</label>
-        <input type="text" id="orderId" required>
-      </div>
-      <div id="contentContainer">
-        <label for="content">Letter Content:</label>
-        <textarea class="content" rows="5" required></textarea>
-      </div>
-      <button type="button" id="addContent">Add Another Letter</button>
-      <div>
-        <label for="type">Type:</label>
-        <select name="type" id="type" required>
-          <option value="regular">Regular</option>
-          <option value="scroll">Scroll</option>
-        </select>
-      </div>
-      <div>
-        <label for="link">Digital Seal Link:</label>
-        <input type="text" id="link" required>
-      </div>
-      <div enctype="multipart/form-data">
-        <label for="polaroid">Polaroid Picture:</label>
-        <input type="file" accept="image/*" id="polaroid" class="polaroid" multiple required>
-      </div>
-      <div>
-        <label for="deliveryDate">Delivery Date:</label>
-        <input type="date" id="deliveryDate" required>
-      </div>
-      <div>
-        <label for="pin">Enter the security pin:</label>
-        <input type="password" id="pin" required>
-      </div>
-      <button type="submit">Submit Letters</button>
-    </form>
-    <div id="result"></div>
-  </div>
 
   <script>
-    const letterForm = document.getElementById('letterForm');
-    const resultDiv = document.getElementById('result');
-    const addContentButton = document.getElementById('addContent');
-    const contentContainer = document.getElementById('contentContainer');
+   const letterForm = document.getElementById("letterForm")
+const resultDiv = document.getElementById("result")
+const errorDetailsDiv = document.getElementById("errorDetails")
+const addContentButton = document.getElementById("addContent")
+const contentContainer = document.getElementById("contentContainer")
+const polaroidInput = document.getElementById("polaroid")
+const imagePreview = document.getElementById("imagePreview")
 
-    addContentButton.addEventListener('click', () => {
-      const textarea = document.createElement('textarea');
-      textarea.classList.add('content');
-      textarea.rows = 5;
-      textarea.required = true;
-      contentContainer.appendChild(textarea);
-    });
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024 
 
-    letterForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
+addContentButton.addEventListener("click", () => {
+  const textarea = document.createElement("textarea")
+  textarea.classList.add("content")
+  textarea.rows = 5
+  textarea.required = true
+  contentContainer.appendChild(textarea)
+})
 
-      const orderId = document.getElementById('orderId').value.trim();
-      const contentElements = document.querySelectorAll('.content');
-      const content = Array.from(contentElements).map((el) => el.value.trim());
-      const type = document.getElementById('type').value.trim();
-      const link = document.getElementById('link').value.trim();
-      const polaroidFiles = document.getElementById('polaroid').files;
-      const polaroid = Array.from(polaroidFiles).map((file, index) => ({ [`polaroid[${index}]`]: file }));
-      const deliveryDate = document.getElementById('deliveryDate').value.trim();
-      const pin = document.getElementById('pin').value.trim();
-
-      if (!orderId || content.some((c) => !c) || !type || !link || !polaroid || !deliveryDate || !pin) {
-        resultDiv.innerHTML = '<p class="error">All fields are required.</p>';
-        return;
-      }
-
-      try {
-      const formData = new FormData();
-      formData.append('orderId', orderId);
-      formData.append('type', type);
-      formData.append('link', link);
-      formData.append('deliveryDate', deliveryDate);
-      formData.append('pin', pin);
-      formData.append('content', JSON.stringify(content));
-      Array.from(polaroidFiles).forEach((file, index) => {
-        formData.append(`polaroid[${index}]`, file);
-      });
-
-
-      const response = await fetch('https://enchant-copy-production.up.railway.app/shopify/letter/', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        resultDiv.innerHTML = `<p class="success">${data.message}</p>`;
-        letterForm.reset();
-      } else {
-        const errorData = await response.json();
-        resultDiv.innerHTML = `<p class="error">${errorData.message}</p>`;
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      resultDiv.innerHTML = '<p class="error">An error occurred while processing the letters. Please try again.</p>';
+polaroidInput.addEventListener("change", (event) => {
+  imagePreview.innerHTML = ""
+  const files = event.target.files
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert(`Image ${file.name} is too large. Maximum size is 5MB.`)
+      continue
     }
-  });
-</script> -->
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = document.createElement("img")
+      img.src = e.target.result
+      img.style.width = "100px"
+      img.style.height = "auto"
+      img.style.margin = "5px"
+      imagePreview.appendChild(img)
+    }
+    reader.readAsDataURL(file)
+  }
+})
+
+letterForm.addEventListener("submit", async (e) => {
+  e.preventDefault()
+  resultDiv.innerHTML = ""
+  errorDetailsDiv.innerHTML = ""
+
+  const orderId = document.getElementById("orderId").value.trim()
+  const contentElements = document.querySelectorAll(".content")
+  const content = Array.from(contentElements).map((el) => el.value.trim())
+  const type = document.getElementById("type").value.trim()
+  const link = document.getElementById("link").value.trim()
+  const polaroidFiles = document.getElementById("polaroid").files
+  const deliveryDate = document.getElementById("deliveryDate").value.trim()
+  const pin = document.getElementById("pin").value.trim()
+
+  // Ensure all fields are filled
+  if (!orderId || content.some((c) => !c) || !type || !link || polaroidFiles.length === 0 || !deliveryDate || !pin) {
+    resultDiv.innerHTML = '<p class="error">All fields are required.</p>'
+    return
+  }
+
+  try {
+    // // Convert images to base64
+    // const polaroidBase64 = await Promise.all(
+    //   Array.from(polaroidFiles).map(
+    //     (file) =>
+    //       new Promise((resolve, reject) => {
+    //         if (file.size > MAX_IMAGE_SIZE) {
+    //           reject(new Error(`Image ${file.name} is too large. Maximum size is 5MB.`))
+    //         }else{
+    //             console.log("File size:", file.size),
+    //             console.log(file.url)
+    //         }
+    //         const reader = new FileReader()
+    //         reader.onload = (e) => resolve(e.target.result.split(",")[1])
+    //         reader.onerror = reject
+    //         reader.readAsDataURL(file)
+    //       }),
+    //   ),
+    // )
+
+    // const polaroidData = await Promise.all(
+    // Array.from(polaroidFiles).map((file) =>
+    //     new Promise((resolve, reject) => {
+    //     if (file.size > MAX_IMAGE_SIZE) {
+    //         reject(new Error(`Image ${file.name} is too large. Maximum size is 5MB.`));
+    //     }
+
+    //     // Blob URL for preview
+    //     const blobUrl = URL.createObjectURL(file);
+    //     console.log("Blob URL:", blobUrl);
+
+    //     // Base64 Encoding for transmission
+    //     const reader = new FileReader();
+    //     reader.onload = (e) => resolve([blobUrl]);
+    //     reader.onerror = reject;
+    //     reader.readAsDataURL(file);
+    //     })
+    // )
+    // );
+
+    const polaroidURLs = Array.from(polaroidFiles).map((file) => URL.createObjectURL(file));
+
+    console.log("Payload being sent:", {
+      orderId,
+      content,
+      type,
+      link,
+      polaroid: polaroidURLs,
+      deliveryDate,
+      pin,
+    })
+
+    const data = await response.json()
+
+    if (response.ok) {
+      resultDiv.innerHTML = `<p class="success">${data.message}</p>`
+      letterForm.reset()
+      imagePreview.innerHTML = ""
+    } else {
+      throw new Error(data.message || "Server responded with an error")
+    }
+  } catch (error) {
+    console.error("Error:", error)
+    resultDiv.innerHTML = '<p class="error">An error occurred while processing the letters. Please try again.</p>'
+    errorDetailsDiv.innerHTML = `Error details: ${error.message}`
+  }
+})
+
+
+  </script>
+</body>
+</html>
