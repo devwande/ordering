@@ -122,15 +122,15 @@
       formData.append("deliveryDate", deliveryDate);
       formData.append("pin", pin);
 
-      console.log("Payload being sent:", {
-        orderId,
-        content,
-        type,
-        link,
-        polaroid: polaroidFiles,
-        deliveryDate,
-        pin,
-      });
+    //   console.log("Payload being sent:", {
+    //     orderId,
+    //     content,
+    //     type,
+    //     link,
+    //     polaroid: polaroidFiles,
+    //     deliveryDate,
+    //     pin,
+    //   });
 
       try {
         const response = await fetch('https://enchant-copy-production.up.railway.app/shopify/letter/', {
