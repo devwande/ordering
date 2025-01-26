@@ -91,3 +91,10 @@ body {
   .polaroid{
     width: 100%;
   }
+
+  .pin{
+    width: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border: 1px solid #ddd;
+  }

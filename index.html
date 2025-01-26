@@ -18,10 +18,11 @@
         <label for="orderId">Order ID <span style="color: gray;">format(e.g 1023)</span>:</label>
         <input type="text" id="orderId" required>
       </div>
-      <div>
+      <div id="letterContents">
         <label for="content">Letter Content:</label>
-        <textarea id="content" rows="10" required></textarea>
+        <textarea name="content" class="content" rows="5" required></textarea>
       </div>
+      <button type="button" id="addLetter">Add Another Letter</button>
       <div>
         <label for="type">Type:</label>
         <select name="type" id="type" required>
@@ -33,9 +34,9 @@
         <label for="link">Digital Seal Link:</label>
         <input type="text" id="link" required>
       </div>
-      <div>
+      <div enctype="multipart/form-data">
         <label for="polaroid">Polaroid Picture:</label>
-        <input type="file" accept="image/*" id="polaroid" class="polaroid" required>
+        <input type="file" accept="image/*" id="polaroid" class="polaroid" multiple required>
       </div>
       <div>
         <label for="deliveryDate">Delivery Date:</label>
@@ -43,7 +44,7 @@
       </div>
       <div>
         <label for="pin">Enter the security pin:</label>
-        <input type="password" id="pin" required>
+        <input type="password" id="pin" class="pin" required>
       </div>
       <button type="submit">Submit Letter</button>
     </form>
@@ -53,36 +54,58 @@
   <script>
     const letterForm = document.getElementById('letterForm');
     const resultDiv = document.getElementById('result');
+    const addLetterButton = document.getElementById('addLetter');
+    const letterContentsDiv = document.getElementById('letterContents');
+
+    // Add another letter content field
+    addLetterButton.addEventListener('click', () => {
+      const newTextArea = document.createElement('textarea');
+      newTextArea.name = 'content';
+      newTextArea.classList.add('content');
+      newTextArea.rows = 5;
+      newTextArea.required = true;
+      letterContentsDiv.appendChild(newTextArea);
+    });
 
     letterForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       const orderId = document.getElementById('orderId').value.trim();
-      const content = document.getElementById('content').value.trim();
+      const contents = Array.from(document.querySelectorAll('.content')).map(textarea => textarea.value.trim());
       const type = document.getElementById('type').value.trim();
       const link = document.getElementById('link').value.trim();
       const polaroid = document.getElementById('polaroid').files[0];
       const deliveryDate = document.getElementById('deliveryDate').value.trim();
       const pin = document.getElementById('pin').value.trim();
 
-
-      if (!orderId || !content || !type || !link || !polaroid || !deliveryDate || !pin) {
+      if (!orderId || contents.some(content => !content) || !type || !link || !polaroid || !deliveryDate || !pin) {
         resultDiv.innerHTML = '<p class="error">All fields are required.</p>';
         return;
       }
 
       try {
+        const formData = new FormData();
+        formData.append('orderId', orderId);
+        formData.append('contents', JSON.stringify(contents)); // Send contents as an array
+        formData.append('type', type);
+        formData.append('link', link);
+        formData.append('polaroid', polaroid);
+        formData.append('deliveryDate', deliveryDate);
+        formData.append('pin', pin);
+
         const response = await fetch('https://enchant-copy-production.up.railway.app/shopify/letter/', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ orderId, content, type, link, polaroid, deliveryDate, pin }),
+          body: formData,
         });
 
         if (response.ok) {
           const data = await response.json();
           resultDiv.innerHTML = `<p class="success">${data.message}</p>`;
           letterForm.reset();
+          // Clear dynamically added fields
+          letterContentsDiv.innerHTML = `
+            <label for="content">Letter Content:</label>
+            <textarea name="content" class="content" rows="5" required></textarea>
+          `;
         } else {
           const errorData = await response.json();
           resultDiv.innerHTML = `<p class="error">${errorData.message}</p>`;
