@@ -115,7 +115,7 @@
 
       const formData = new FormData();
       formData.append("orderId", orderId);
-      content.forEach((text) => formData.append("content", text));
+      formData.append("content", JSON.stringify(content));
       formData.append("type", type);
       formData.append("link", link);
       polaroidFiles.forEach((file) => formData.append("polaroid", file));
@@ -156,43 +156,3 @@
   </script>
 </body>
 </html>
-
-
-<!-- // // Convert images to base64
-// const polaroidBase64 = await Promise.all(
-//   Array.from(polaroidFiles).map(
-//     (file) =>
-//       new Promise((resolve, reject) => {
-//         if (file.size > MAX_IMAGE_SIZE) {
-//           reject(new Error(`Image ${file.name} is too large. Maximum size is 5MB.`))
-//         }else{
-//             console.log("File size:", file.size),
-//             console.log(file.url)
-//         }
-//         const reader = new FileReader()
-//         reader.onload = (e) => resolve(e.target.result.split(",")[1])
-//         reader.onerror = reject
-//         reader.readAsDataURL(file)
-//       }),
-//   ),
-// )
-
-// const polaroidData = await Promise.all(
-// Array.from(polaroidFiles).map((file) =>
-//     new Promise((resolve, reject) => {
-//     if (file.size > MAX_IMAGE_SIZE) {
-//         reject(new Error(`Image ${file.name} is too large. Maximum size is 5MB.`));
-//     }
-
-//     // Blob URL for preview
-//     const blobUrl = URL.createObjectURL(file);
-//     console.log("Blob URL:", blobUrl);
-
-//     // Base64 Encoding for transmission
-//     const reader = new FileReader();
-//     reader.onload = (e) => resolve([blobUrl]);
-//     reader.onerror = reject;
-//     reader.readAsDataURL(file);
-//     })
-// )
-// ); -->
