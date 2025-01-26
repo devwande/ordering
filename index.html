@@ -18,12 +18,12 @@
         <label for="orderId">Order ID <span style="color: gray;">format(e.g 1023)</span>:</label>
         <input type="text" id="orderId" required>
       </div>
-      <div id="letterContents">
+      <div id="content">
         <label for="content">Letter Content:</label>
         <textarea name="content" class="content" rows="5" required></textarea>
       </div>
       <button type="button" id="addLetter">Add Another Letter</button>
-      <div>
+      <div style="padding-top: 5px;">
         <label for="type">Type:</label>
         <select name="type" id="type" required>
           <option value="regular">Regular</option>
@@ -55,16 +55,15 @@
     const letterForm = document.getElementById('letterForm');
     const resultDiv = document.getElementById('result');
     const addLetterButton = document.getElementById('addLetter');
-    const letterContentsDiv = document.getElementById('letterContents');
+    const contentDiv = document.getElementById('content');
 
-    // Add another letter content field
     addLetterButton.addEventListener('click', () => {
       const newTextArea = document.createElement('textarea');
       newTextArea.name = 'content';
       newTextArea.classList.add('content');
       newTextArea.rows = 5;
       newTextArea.required = true;
-      letterContentsDiv.appendChild(newTextArea);
+      contentDiv.appendChild(newTextArea);
     });
 
     letterForm.addEventListener('submit', async function (e) {
@@ -85,7 +84,7 @@
       try {
         const formData = new FormData();
         formData.append('orderId', orderId);
-        formData.append('contents', JSON.stringify(contents)); // Send contents as an array
+        formData.append('contents', JSON.stringify(contents));
         formData.append('type', type);
         formData.append('link', link);
         formData.append('polaroid', polaroid);
@@ -101,8 +100,7 @@
           const data = await response.json();
           resultDiv.innerHTML = `<p class="success">${data.message}</p>`;
           letterForm.reset();
-          // Clear dynamically added fields
-          letterContentsDiv.innerHTML = `
+          contentDiv.innerHTML = `
             <label for="content">Letter Content:</label>
             <textarea name="content" class="content" rows="5" required></textarea>
           `;
