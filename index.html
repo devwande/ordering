@@ -11,6 +11,7 @@
     <div class="logo">Enchant Gifts</div>
   </header>
   <div class="container">
+    <button id="checkOrderButton" style="margin-bottom: 20px;">Check Order Details</button>
     <h1>Writer Letter Input</h1>
 
     <form id="letterForm">
@@ -43,10 +44,6 @@
         <label for="deliveryDate">Delivery Date:</label>
         <input type="date" id="deliveryDate">
       </div>
-      <div>
-        <label for="pin">Enter the security pin:</label>
-        <input type="password" id="pin" required>
-      </div>
       <button type="submit" id="submitButton">Submit Order Details</button>
     </form>
     <div id="result"></div>
@@ -54,6 +51,10 @@
   </div>
 
   <script>
+    const checkOrderButton = document.getElementById("checkOrderButton");
+    checkOrderButton.addEventListener("click", () => {
+      window.location.href = "order-details.html";
+    });
     const submitButton = document.getElementById("submitButton");
 
     const letterForm = document.getElementById("letterForm");
