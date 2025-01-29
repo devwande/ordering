@@ -23,17 +23,18 @@
       </div>
       <button type="submit">Get Order Details</button>
     </form>
+    
     <div id="orderDetails" style="margin-top: 20px;"></div>
     <div id="errorDetails" style="color: red; margin-top: 10px;"></div>
 
-
-  </div>
+    <button id="refreshPageButton" style="margin-top: 20px; display: none;">Refresh Page</button>
   </div>
 
   <script>
     const form = document.getElementById("orderDetailsForm");
     const orderDetailsDiv = document.getElementById("orderDetails");
     const errorDetailsDiv = document.getElementById("errorDetails");
+    const refreshPageButton = document.getElementById("refreshPageButton");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -52,10 +53,7 @@
             "Content-Type": "application/json",
           },
           method: "POST",
-          body: JSON.stringify({
-            orderId: orderId,
-            pin: pin,
-          }),
+          body: JSON.stringify({ orderId, pin }),
         });
 
         if (!response.ok) {
@@ -90,11 +88,17 @@
 
         errorDetailsDiv.textContent = "";
 
+        refreshPageButton.style.display = "block";
+
       } catch (error) {
         console.error("Error fetching order details:", error);
         orderDetailsDiv.innerHTML = "";
         errorDetailsDiv.textContent = error.message;
       }
+    });
+
+    refreshPageButton.addEventListener("click", () => {
+      location.reload();
     });
   </script>
 </body>
