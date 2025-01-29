@@ -45,6 +45,10 @@
         <input type="date" id="deliveryDate">
       </div>
       <div>
+        <label for="receiverNumber">Receiver's phone number:</label>
+        <input type="tel" id="receiverNumber" required>
+      </div>
+      <div>
         <label for="pin">Pin:</label>
         <input type="password" id="pin">
       </div>
@@ -68,10 +72,10 @@
     const contentContainer = document.getElementById("contentContainer");
     const polaroidInput = document.getElementById("polaroid");
     const imagePreview = document.getElementById("imagePreview");
+    const receiverNumber = document.getElementById("receiverNumber");
   
     const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
   
-    // Set min date for deliveryDate input
     const today = new Date().toISOString().split("T")[0];
     document.getElementById("deliveryDate").setAttribute("min", today);
   
@@ -119,10 +123,10 @@
       const link = document.getElementById("link").value.trim();
       const polaroidFiles = Array.from(document.getElementById("polaroid").files);
       const deliveryDate = document.getElementById("deliveryDate").value.trim();
+      const receiverNumber = document.getElementById("receiverNumber").value.trim();
       const pin = document.getElementById("pin").value.trim();
   
-      // Validation for only required fields
-      if (!orderId || content.some((c) => !c) || !type || !pin) {
+      if (!orderId || content.some((c) => !c) || !type || !pin || !receiverNumber) {
         resultDiv.innerHTML = '<p class="error">Order ID, Letter Content, Type, and Pin are required fields.</p>';
         submitButton.disabled = false;
         return;
@@ -135,6 +139,7 @@
       if (link) formData.append("link", link); 
       polaroidFiles.forEach((file) => formData.append("polaroid", file)); 
       if (deliveryDate) formData.append("deliveryDate", deliveryDate); 
+      formData.append("receiverNumber", receiverNumber);
       formData.append("pin", pin);
 
         console.log("Payload being sent:", {
@@ -144,6 +149,7 @@
         link,
         polaroid: polaroidFiles,
         deliveryDate,
+        receiverNumber,
         pin,
       });
 
