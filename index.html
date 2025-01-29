@@ -45,7 +45,7 @@
         <input type="date" id="deliveryDate">
       </div>
       <div>
-        <label for="receiverNumber">Receiver's phone number:</label>
+        <label for="receiverNumber">Enter Receiver's Phone Number:</label>
         <input type="tel" id="receiverNumber" required>
       </div>
       <div>
@@ -127,7 +127,7 @@
       const pin = document.getElementById("pin").value.trim();
   
       if (!orderId || content.some((c) => !c) || !type || !pin || !receiverNumber) {
-        resultDiv.innerHTML = '<p class="error">Order ID, Letter Content, Type, and Pin are required fields.</p>';
+        resultDiv.innerHTML = `<p class="error">Order ID, Letter Content, Type, Receiver's Number and Pin are required fields.</p>`;
         submitButton.disabled = false;
         return;
       }
