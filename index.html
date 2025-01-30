@@ -72,9 +72,8 @@
     const contentContainer = document.getElementById("contentContainer");
     const polaroidInput = document.getElementById("polaroid");
     const imagePreview = document.getElementById("imagePreview");
-    const receiverNumber = document.getElementById("receiverNumber");
   
-    const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024; 
   
     const today = new Date().toISOString().split("T")[0];
     document.getElementById("deliveryDate").setAttribute("min", today);
@@ -177,6 +176,5 @@
       }
     });
   </script>
-  
 </body>
 </html>
