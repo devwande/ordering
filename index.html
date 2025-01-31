@@ -21,12 +21,13 @@
       </div>
       <div id="contentContainer">
         <label for="content">Letter Content:</label>
-        <textarea class="content" rows="5" required></textarea>
+        <textarea class="content" rows="5" ></textarea>
       </div>
       <button type="button" id="addContent">Add Another Letter</button>
       <div>
         <label for="type">Type:</label>
         <select name="type" id="type" required>
+          <!-- <option value=""></option> -->
           <option value="regular">Regular</option>
           <option value="scroll">Scroll</option>
         </select>
@@ -125,11 +126,12 @@
       const receiverNumber = document.getElementById("receiverNumber").value.trim();
       const pin = document.getElementById("pin").value.trim();
   
-      if (!orderId || content.some((c) => !c) || !type || !pin || !receiverNumber) {
-        resultDiv.innerHTML = `<p class="error">Order ID, Letter Content, Type, Receiver's Number and Pin are required fields.</p>`;
+      if (!orderId  || !type || !pin || !receiverNumber) {
+        resultDiv.innerHTML = `<p class="error">Order ID, Type, Receiver's Number and Pin are required fields.</p>`;
         submitButton.disabled = false;
         return;
       }
+    // || content.some((c) => !c)
   
       const formData = new FormData();
       formData.append("orderId", orderId);
